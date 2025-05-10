@@ -49,22 +49,50 @@ class SaleResource extends Resource
                             ->searchable()
                             ->preload()
                             ->reactive()
-                            ->afterStateUpdated(fn ($state, callable $set) => $set('unit_price', \App\Models\Product::find($state)?->price ?? 0)),
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                $set('unit_price', \App\Models\Product::find($state)?->price ?? 0);
+                                $set('total_amount', self::calculateTotal($get('products')));
+                            }),
                         Forms\Components\TextInput::make('quantity')
                             ->required()
                             ->numeric()
                             ->default(1)
-                            ->minValue(1),
+                            ->minValue(1)
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                $set('total_amount', self::calculateTotal($get('products')));
+                            }),
                         Forms\Components\TextInput::make('unit_price')
                             ->required()
                             ->numeric()
-                            ->prefix('$'),
+                            ->prefix('$')
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                $set('total_amount', self::calculateTotal($get('products')));
+                            }),
                     ])
                     ->columns(3)
                     ->columnSpanFull()
                     ->defaultItems(0)
                     ->reorderable(false)
-                    ->itemLabel(fn (array $state): ?string => isset($state['product_id']) ? \App\Models\Product::find($state['product_id'])?->name : null),
+                    ->itemLabel(fn (array $state): ?string => isset($state['product_id']) ? \App\Models\Product::find($state['product_id'])?->name : null)
+                    ->live()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('total_amount', self::calculateTotal($state));
+                    }),
+                Forms\Components\TextInput::make('total_amount')
+                    ->label('Total Amount')
+                    ->prefix('$')
+                    ->disabled()
+                    ->dehydrated()
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        if ($record) {
+                            $total = $record->products->sum(function ($product) {
+                                return $product->pivot->quantity * $product->pivot->unit_price;
+                            });
+                            $component->state($total);
+                        }
+                    }),
                 Forms\Components\Textarea::make('notes')
                     ->maxLength(65535)
                     ->columnSpanFull(),
@@ -124,5 +152,16 @@ class SaleResource extends Resource
             'view' => Pages\ViewSale::route('/{record}'),
             'edit' => Pages\EditSale::route('/{record}/edit'),
         ];
+    }
+
+    protected static function calculateTotal($products): float
+    {
+        if (!is_array($products)) {
+            return 0;
+        }
+
+        return collect($products)->sum(function ($product) {
+            return ($product['quantity'] ?? 0) * ($product['unit_price'] ?? 0);
+        });
     }
 }

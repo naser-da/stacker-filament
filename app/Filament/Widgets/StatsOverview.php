@@ -22,11 +22,6 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-users')
                 ->color('success'),
 
-            Stat::make('Total Products', Product::count())
-                ->description('Products in inventory')
-                ->descriptionIcon('heroicon-m-cube')
-                ->color('primary'),
-
             Stat::make('Total Sales', $totalSales)
                 ->description('Total number of sales')
                 ->descriptionIcon('heroicon-m-shopping-cart')
@@ -37,10 +32,6 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-currency-dollar')
                 ->color('success'),
 
-            Stat::make('Average Order Value', number_format($averageOrderValue, 2))
-                ->description('Average value per sale')
-                ->descriptionIcon('heroicon-m-chart-bar')
-                ->color('info'),
         ];
     }
 } 
