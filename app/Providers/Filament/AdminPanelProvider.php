@@ -19,12 +19,13 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panel = $panel
             ->default()
             ->id('admin')
             ->path('admin')
@@ -55,8 +56,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->brandName(Setting::get('company_name', config('app.name')))
-            ->favicon(fn () => Setting::get('company_logo') ? Storage::url(Setting::get('company_logo')) : null);
+            ]);
+
+        // Only set brand name and favicon if settings table exists
+        if (Schema::hasTable('settings')) {
+            $panel->brandName(Setting::get('company_name', config('app.name')))
+                  ->favicon(fn () => Setting::get('company_logo') ? Storage::url(Setting::get('company_logo')) : null);
+        }
+
+        return $panel;
     }
 }
