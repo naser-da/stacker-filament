@@ -57,16 +57,19 @@ class SaleResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(1)
-                            ->minValue(1)
-                            ->reactive()
+                            ->minValue(0)
+                            ->step(1)
+                            ->live(debounce: 1000)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
                             }),
                         Forms\Components\TextInput::make('unit_price')
                             ->required()
                             ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
                             ->prefix('$')
-                            ->reactive()
+                            ->live(debounce: 1000)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
                             }),
@@ -161,7 +164,18 @@ class SaleResource extends Resource
         }
 
         return collect($products)->sum(function ($product) {
-            return ($product['quantity'] ?? 0) * ($product['unit_price'] ?? 0);
+            if (!isset($product['quantity']) || !isset($product['unit_price'])) {
+                return 0;
+            }
+
+            $quantity = filter_var($product['quantity'], FILTER_VALIDATE_FLOAT);
+            $unitPrice = filter_var($product['unit_price'], FILTER_VALIDATE_FLOAT);
+
+            if ($quantity === false || $unitPrice === false) {
+                return 0;
+            }
+
+            return $quantity * $unitPrice;
         });
     }
 }
