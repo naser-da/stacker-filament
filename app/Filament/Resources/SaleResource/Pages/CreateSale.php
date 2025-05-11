@@ -11,6 +11,19 @@ class CreateSale extends CreateRecord
 {
     protected static string $resource = SaleResource::class;
 
+    public function getTitle(): string
+    {
+        return __('filament.resources.sales.add_title');
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            __('filament.resources.sales.navigation_label'),
+            __('filament.resources.sales.add_breadcrumb'),
+        ];
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $total = 0;

@@ -22,15 +22,37 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'Inventory Management';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.categories.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.resources.categories.navigation_group');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Category::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                ->label(__('filament.resources.categories.name'))
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 Forms\Components\Textarea::make('description')
+                    ->label(__('filament.resources.categories.description'))
                     ->maxLength(65535)
                     ->columnSpanFull(),
             ]);
@@ -41,20 +63,24 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('filament.resources.categories.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
+                    ->label(__('filament.resources.categories.description'))
                     ->limit(50)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('products_count')
+                    ->label(__('filament.resources.categories.products_count'))
                     ->counts('products')
-                    ->label('Products')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('filament.resources.categories.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('filament.resources.categories.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -64,7 +90,7 @@ class CategoryResource extends Resource
             ])
             ->actions([
 
-                EditAction::make()->modalHeading('Edit Item'),
+                EditAction::make()->modalHeading(__('filament.resources.categories.edit_title')),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

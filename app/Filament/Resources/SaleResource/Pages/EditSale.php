@@ -14,7 +14,21 @@ class EditSale extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->modalHeading(__('filament.resources.sales.delete_modal_title')),
+        ];
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament.resources.sales.edit_title');
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            __('filament.resources.sales.navigation_label'),
+            __('filament.resources.sales.edit_breadcrumb'),
         ];
     }
 

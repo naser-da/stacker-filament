@@ -23,36 +23,40 @@ class ViewSale extends ViewRecord
     {
         return $infolist
             ->schema([
-                Infolists\Components\Section::make('Sale Information')
+                Infolists\Components\Section::make(__('filament.resources.sales.sale_information'))
                     ->schema([
                         Infolists\Components\TextEntry::make('customer.name')
-                            ->label('Customer'),
+                            ->label(__('filament.resources.sales.customer')),
                         Infolists\Components\TextEntry::make('total_amount')
-                            ->money(),
+                            ->money()
+                            ->label(__('filament.resources.sales.total_amount')),
                         Infolists\Components\TextEntry::make('created_at')
-                            ->dateTime(),
+                            ->dateTime()
+                            ->label(__('filament.resources.sales.created_at')),
                         Infolists\Components\TextEntry::make('notes')
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->label(__('filament.resources.sales.notes')),
                     ])
                     ->columns(3),
 
-                Infolists\Components\Section::make('Products')
+                Infolists\Components\Section::make(__('filament.resources.sales.products'))
                     ->schema([
                         Infolists\Components\RepeatableEntry::make('products')
+                            ->label(' ')
                             ->schema([
                                 Infolists\Components\TextEntry::make('name')
-                                    ->label('Product'),
+                                    ->label(__('filament.resources.sales.product')),
                                 Infolists\Components\TextEntry::make('pivot.quantity')
-                                    ->label('Quantity'),
+                                    ->label(__('filament.resources.sales.quantity')),
                                 Infolists\Components\TextEntry::make('pivot.unit_price')
                                     ->money()
-                                    ->label('Unit Price'),
+                                    ->label(__('filament.resources.sales.unit_price')),
                                 Infolists\Components\TextEntry::make('subtotal')
                                     ->state(function ($record) {
                                         return $record->pivot->quantity * $record->pivot->unit_price;
                                     })
                                     ->money()
-                                    ->label('Subtotal'),
+                                    ->label(__('filament.resources.sales.subtotal')),
                             ])
                             ->columns(4),
                     ]),

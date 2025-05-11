@@ -21,29 +21,55 @@ class SaleResource extends Resource
 
     protected static ?string $navigationGroup = 'Sales Management';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.sales.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.resources.sales.navigation_group');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Sale::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('customer_id')
+                    ->label(__('filament.resources.sales.customer'))
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
+                            ->label(__('filament.resources.customers.name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
+                            ->label(__('filament.resources.customers.email'))
                             ->email()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('phone')
+                            ->label(__('filament.resources.customers.phone'))
                             ->tel()
                             ->maxLength(255),
                     ]),
                 Forms\Components\Repeater::make('products')
+                    ->label(__('filament.resources.sales.products'))
                     ->schema([
                         Forms\Components\Select::make('product_id')
-                            ->label('Product')
+                            ->label(__('filament.resources.sales.product'))
                             ->options(\App\Models\Product::pluck('name', 'id'))
                             ->required()
                             ->searchable()
@@ -54,6 +80,7 @@ class SaleResource extends Resource
                                 $set('total_amount', self::calculateTotal($get('products')));
                             }),
                         Forms\Components\TextInput::make('quantity')
+                            ->label(__('filament.resources.sales.quantity'))
                             ->required()
                             ->numeric()
                             ->default(1)
@@ -64,6 +91,7 @@ class SaleResource extends Resource
                                 $set('total_amount', self::calculateTotal($get('products')));
                             }),
                         Forms\Components\TextInput::make('unit_price')
+                            ->label(__('filament.resources.sales.unit_price'))
                             ->required()
                             ->numeric()
                             ->minValue(0)
@@ -82,9 +110,16 @@ class SaleResource extends Resource
                     ->live()
                     ->afterStateUpdated(function ($state, callable $set) {
                         $set('total_amount', self::calculateTotal($state));
-                    }),
+                    })
+                    ->deleteAction(
+                        fn (Forms\Components\Actions\Action $action) => $action
+                            ->modalHeading(__('filament.resources.sales.delete_product_modal_title'))
+                            ->modalDescription(__('filament.resources.sales.delete_product_modal_description'))
+                            ->modalSubmitActionLabel(__('filament.common.actions.delete'))
+                            ->modalCancelActionLabel(__('filament.common.actions.cancel'))
+                    ),
                 Forms\Components\TextInput::make('total_amount')
-                    ->label('Total Amount')
+                    ->label(__('filament.resources.sales.total_amount'))
                     ->prefix('$')
                     ->disabled()
                     ->dehydrated()
@@ -97,6 +132,7 @@ class SaleResource extends Resource
                         }
                     }),
                 Forms\Components\Textarea::make('notes')
+                    ->label(__('filament.resources.sales.notes'))
                     ->maxLength(65535)
                     ->columnSpanFull(),
             ]);
@@ -107,20 +143,24 @@ class SaleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
+                    ->label(__('filament.resources.sales.customer'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money()
+                    ->label(__('filament.resources.sales.total_amount'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
-                    ->label('Items')
+                    ->label(__('filament.resources.sales.items'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+                    ->label(__('filament.resources.sales.created_at'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
+                    ->label(__('filament.resources.sales.updated_at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -131,7 +171,8 @@ class SaleResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading(__('filament.resources.sales.delete_modal_title')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

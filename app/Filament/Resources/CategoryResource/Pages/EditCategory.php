@@ -13,7 +13,21 @@ class EditCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->modalHeading(__('filament.resources.categories.delete_modal_title')),
+        ];
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament.resources.categories.edit_title');
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            __('filament.resources.categories.navigation_label'),
+            __('filament.resources.categories.edit_breadcrumb'),
         ];
     }
 }

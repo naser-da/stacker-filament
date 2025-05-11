@@ -21,24 +21,59 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationGroup = 'Sales Management';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.customers.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.customers.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.customers.plural_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.resources.customers.navigation_group');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(__('filament.common.fields.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                    ->label(__('filament.common.fields.email'))
                     ->email()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('phone')
+                    ->label(__('filament.common.fields.phone'))
                     ->tel()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('address')
+                    ->label(__('filament.common.fields.address'))
                     ->maxLength(65535)
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('notes')
+                    ->label(__('filament.common.fields.notes'))
                     ->maxLength(65535)
                     ->columnSpanFull(),
             ]);
@@ -49,23 +84,28 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('filament.common.fields.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->label(__('filament.common.fields.email'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
+                    ->label(__('filament.common.fields.phone'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sales_count')
                     ->counts('sales')
-                    ->label('Total Sales')
+                    ->label(__('filament.widgets.stats.total_sales'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('filament.common.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('filament.common.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -75,7 +115,8 @@ class CustomerResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading(__('filament.resources.customers.delete_modal_title')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

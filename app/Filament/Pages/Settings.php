@@ -19,19 +19,45 @@ class Settings extends Page
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static ?string $navigationLabel = 'Settings';
     protected static ?string $title = 'Settings';
+    protected static ?string $slug = 'settings';
     protected static ?int $navigationSort = 100;
 
+    public ?array $data = [];
     public ?string $language = null;
     public ?string $company_name = null;
     public ?string $company_address = null;
     public ?string $company_phone = null;
     public ?string $company_email = null;
     public $company_logo = null;
+    
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.navigation.settings');
+    }
+    
+    public function getTitle(): string
+    {
+        return __('filament.navigation.settings');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.navigation.settings');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.navigation.settings');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.navigation.settings');
+    }
 
     public function mount(): void
     {
         $this->form->fill([
-            'language' => App::getLocale(),
             'company_name' => Setting::get('company_name'),
             'company_address' => Setting::get('company_address'),
             'company_phone' => Setting::get('company_phone'),
@@ -44,35 +70,27 @@ class Settings extends Page
     {
         return $form
             ->schema([
-                Select::make('language')
-                    ->label(__('filament.common.fields.language'))
-                    ->options([
-                        'en' => 'English',
-                        'ar' => 'العربية',
-                    ])
-                    ->default('en')
-                    ->required(),
                 
                 TextInput::make('company_name')
-                    ->label('Company Name')
+                    ->label(__('filament.resources.settings.company_name'))
                     ->required(),
                 
                 TextInput::make('company_address')
-                    ->label('Company Address')
+                    ->label(__('filament.resources.settings.company_address'))
                     ->required(),
                 
                 TextInput::make('company_phone')
-                    ->label('Company Phone')
+                    ->label(__('filament.resources.settings.company_phone'))
                     ->tel()
                     ->required(),
                 
                 TextInput::make('company_email')
-                    ->label('Company Email')
+                    ->label(__('filament.resources.settings.company_email'))
                     ->email()
                     ->required(),
                 
                 FileUpload::make('company_logo')
-                    ->label('Company Logo')
+                    ->label(__('filament.resources.settings.company_logo'))
                     ->image()
                     ->directory('company')
                     ->visibility('public')
@@ -88,22 +106,6 @@ class Settings extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        
-        // Set the application locale
-        App::setLocale($data['language']);
-        
-        // Store in session
-        session()->put('locale', $data['language']);
-        
-        // Store in cookie for persistence
-        cookie()->queue('locale', $data['language'], 60 * 24 * 30); // 30 days
-        
-        // Set RTL if Arabic is selected
-        if ($data['language'] === 'ar') {
-            session()->put('rtl', true);
-        } else {
-            session()->put('rtl', false);
-        }
 
         // Save company settings
         Setting::set('company_name', $data['company_name']);
@@ -119,9 +121,18 @@ class Settings extends Page
             ->success()
             ->send();
 
-        // Redirect to refresh the page with new locale
         $this->redirect(request()->header('Referer'));
     }
 
-    protected static string $view = 'filament.pages.settings';
+    public function getViewData(): array
+    {
+        return [
+            'form' => $this->form,
+        ];
+    }
+
+    public function getView(): string
+    {
+        return 'filament.pages.settings';
+    }
 } 
