@@ -19,6 +19,19 @@ class ViewSale extends ViewRecord
         ];
     }
 
+    public function getTitle(): string
+    {
+        return __('filament.resources.sales.view_title');
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            __('filament.resources.sales.navigation_label'),
+            __('filament.resources.sales.view_breadcrumb'),
+        ];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -27,6 +40,9 @@ class ViewSale extends ViewRecord
                     ->schema([
                         Infolists\Components\TextEntry::make('customer.name')
                             ->label(__('filament.resources.sales.customer')),
+                        Infolists\Components\TextEntry::make('order_date')
+                            ->label(__('filament.resources.sales.order_date'))
+                            ->date(),
                         Infolists\Components\TextEntry::make('total_amount')
                             ->money()
                             ->label(__('filament.resources.sales.total_amount')),
@@ -34,7 +50,6 @@ class ViewSale extends ViewRecord
                             ->dateTime()
                             ->label(__('filament.resources.sales.created_at')),
                         Infolists\Components\TextEntry::make('notes')
-                            ->columnSpanFull()
                             ->label(__('filament.resources.sales.notes')),
                     ])
                     ->columns(3),

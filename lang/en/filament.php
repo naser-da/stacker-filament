@@ -52,6 +52,9 @@ return [
             'total' => 'Total',
             'table_heading' => 'Sales',
             'create_button' => 'Add Sale',
+            'order_date' => 'Order Date',
+            'view_title' => 'View Sale',
+            'view_breadcrumb' => 'View',
         ],
         'categories' => [
             'label' => 'Category',

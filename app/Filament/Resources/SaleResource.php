@@ -65,6 +65,11 @@ class SaleResource extends Resource
                             ->tel()
                             ->maxLength(255),
                     ]),
+                Forms\Components\DatePicker::make('order_date')
+                    ->label(__('filament.resources.sales.order_date'))
+                    ->required()
+                    ->default(now())
+                    ->displayFormat('d/m/Y'),
                 Forms\Components\Repeater::make('products')
                     ->label(__('filament.resources.sales.products'))
                     ->schema([
@@ -145,6 +150,10 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('filament.resources.sales.customer'))
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('order_date')
+                    ->label(__('filament.resources.sales.order_date'))
+                    ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money()
