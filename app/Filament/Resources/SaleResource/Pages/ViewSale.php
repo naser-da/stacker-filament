@@ -44,8 +44,9 @@ class ViewSale extends ViewRecord
                             ->label(__('filament.resources.sales.order_date'))
                             ->date(),
                         Infolists\Components\TextEntry::make('total_amount')
-                            ->money()
-                            ->label(__('filament.resources.sales.total_amount')),
+                            ->money('USD', 3)
+                            ->label(__('filament.resources.sales.total_amount'))
+                            ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                         Infolists\Components\TextEntry::make('created_at')
                             ->dateTime()
                             ->label(__('filament.resources.sales.created_at')),
@@ -64,14 +65,16 @@ class ViewSale extends ViewRecord
                                 Infolists\Components\TextEntry::make('pivot.quantity')
                                     ->label(__('filament.resources.sales.quantity')),
                                 Infolists\Components\TextEntry::make('pivot.unit_price')
-                                    ->money()
-                                    ->label(__('filament.resources.sales.unit_price')),
+                                    ->money('USD', 3)
+                                    ->label(__('filament.resources.sales.unit_price'))
+                                    ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                                 Infolists\Components\TextEntry::make('subtotal')
                                     ->state(function ($record) {
                                         return $record->pivot->quantity * $record->pivot->unit_price;
                                     })
-                                    ->money()
-                                    ->label(__('filament.resources.sales.subtotal')),
+                                    ->money('USD', 3)
+                                    ->label(__('filament.resources.sales.subtotal'))
+                                    ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                             ])
                             ->columns(4),
                     ]),

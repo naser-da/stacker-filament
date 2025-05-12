@@ -43,8 +43,9 @@ class ViewCustomer extends ViewRecord
                     ->schema([
                         Infolists\Components\TextEntry::make('total_orders_amount')
                             ->label(__('filament.resources.customers.total_orders_amount'))
-                            ->money()
-                            ->state(fn ($record) => $record->getTotalOrdersAmount()),
+                            ->money('USD', 3)
+                            ->state(fn ($record) => $record->getTotalOrdersAmount())
+                            ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                         Infolists\Components\TextEntry::make('last_order_date')
                             ->label(__('filament.resources.customers.last_order_date'))
                             ->date()
@@ -70,7 +71,8 @@ class ViewCustomer extends ViewRecord
                                     ->date(),
                                 Infolists\Components\TextEntry::make('total_amount')
                                     ->label(__('filament.resources.sales.total_amount'))
-                                    ->money(),
+                                    ->money('USD', 3)
+                                    ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                             ])
                             ->columns(3)
                             ->state(fn ($record) => $record->sales()->latest()->take(5)->get())

@@ -91,7 +91,7 @@ class SaleResource extends Resource
                             ->default(1)
                             ->minValue(0)
                             ->step(1)
-                            ->live(debounce: 1000)
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
                                 $unitPrice = $get('unit_price') ?? 0;
@@ -102,29 +102,31 @@ class SaleResource extends Resource
                             ->required()
                             ->numeric()
                             ->minValue(0)
-                            ->step(0.01)
+                            ->step(0.001)
                             ->prefix('$')
-                            ->live(debounce: 1000)
+                            ->formatStateUsing(fn ($state) => number_format($state, 3))
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
                                 $quantity = $get('quantity') ?? 0;
-                                $set('subtotal', $quantity * $state);
+                                $set('subtotal', round($quantity * $state, 3));
                             }),
                         Forms\Components\TextInput::make('subtotal')
                             ->label(__('filament.resources.sales.subtotal'))
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated()
+                            ->formatStateUsing(fn ($state) => number_format($state, 3))
                             ->afterStateHydrated(function ($component, $state, $get) {
                                 $quantity = $get('quantity') ?? 0;
                                 $unitPrice = $get('unit_price') ?? 0;
-                                $component->state($quantity * $unitPrice);
+                                $component->state(round($quantity * $unitPrice, 3));
                             })
                             ->live()
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $quantity = $get('quantity') ?? 0;
                                 $unitPrice = $get('unit_price') ?? 0;
-                                $set('subtotal', $quantity * $unitPrice);
+                                $set('subtotal', round($quantity * $unitPrice, 3));
                             }),
                     ])
                     ->columns(4)
@@ -148,12 +150,13 @@ class SaleResource extends Resource
                     ->prefix('$')
                     ->disabled()
                     ->dehydrated()
+                    ->formatStateUsing(fn ($state) => number_format($state, 3))
                     ->afterStateHydrated(function ($component, $state, $record) {
                         if ($record) {
                             $total = $record->products->sum(function ($product) {
                                 return $product->pivot->quantity * $product->pivot->unit_price;
                             });
-                            $component->state($total);
+                            $component->state(round($total, 3));
                         }
                     }),
                 Forms\Components\Textarea::make('notes')
@@ -176,7 +179,7 @@ class SaleResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->money()
+                    ->money('USD', 3)
                     ->label(__('filament.resources.sales.total_amount'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('products_count')
@@ -233,7 +236,7 @@ class SaleResource extends Resource
             return 0;
         }
 
-        return collect($products)->sum(function ($product) {
+        return round(collect($products)->sum(function ($product) {
             if (!isset($product['quantity']) || !isset($product['unit_price'])) {
                 return 0;
             }
@@ -246,6 +249,6 @@ class SaleResource extends Resource
             }
 
             return $quantity * $unitPrice;
-        });
+        }), 3);
     }
 }
