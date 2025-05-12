@@ -22,4 +22,18 @@ class Customer extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function getTotalOrdersAmount(): float
+    {
+        return $this->sales()->sum('total_amount');
+    }
+
+    public function getLastOrderDate(): ?string
+    {
+        $lastSale = $this->sales()
+            ->orderBy('order_date', 'desc')
+            ->first();
+
+        return $lastSale?->order_date;
+    }
 }

@@ -8,10 +8,23 @@ return [
     ],
     'resources' => [
         'customers' => [
-            'label' => 'العملاء',
+            'label' => 'عميل',
             'plural_label' => 'العملاء',
             'navigation_label' => 'العملاء',
             'navigation_group' => 'إدارة المبيعات',
+            'name' => 'الاسم',
+            'email' => 'البريد الإلكتروني',
+            'phone' => 'الهاتف',
+            'address' => 'العنوان',
+            'notes' => 'ملاحظات',
+            'delete_modal_title' => 'حذف العميل',
+            'customer_information' => 'معلومات العميل',
+            'sales_information' => 'معلومات المبيعات',
+            'total_orders_amount' => 'إجمالي قيمة الطلبات',
+            'last_order_date' => 'تاريخ آخر طلب',
+            'total_orders' => 'إجمالي الطلبات',
+            'recent_sales' => 'المبيعات الأخيرة',
+            'no_sales' => 'لا توجد مبيعات لهذا العميل.',
             'delete_modal_title' => 'حذف العميل',
             'name' => 'الاسم',
             'email' => 'البريد الإلكتروني',
@@ -20,6 +33,8 @@ return [
             'created_at' => 'تاريخ الإنشاء',
             'updated_at' => 'تاريخ التحديث',
             'description' => 'إجمالي العملاء',
+            'address' => 'العنوان',
+            'notes' => 'ملاحظات',
         ],
         'products' => [
             'label' => 'المنتجات',
@@ -47,6 +62,7 @@ return [
 
         ],
         'sales' => [
+            'id' => 'الرقم',
             'label' => 'المبيعات',
             'plural_label' => 'المبيعات',
             'navigation_label' => 'المبيعات',
@@ -147,6 +163,11 @@ return [
             'total_sales' => 'إجمالي المبيعات',
             'total_revenue' => 'إجمالي الإيرادات',
             'average_order' => 'متوسط الطلب',
+        ],
+        'sales_chart' => [
+            'title' => 'المبيعات عبر الزمن',
+            'start_date' => 'تاريخ البداية',
+            'end_date' => 'تاريخ النهاية',
         ],
     ],
 ]; 
