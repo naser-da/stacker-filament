@@ -94,6 +94,8 @@ class SaleResource extends Resource
                             ->live(debounce: 1000)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
+                                $unitPrice = $get('unit_price') ?? 0;
+                                $set('subtotal', $state * $unitPrice);
                             }),
                         Forms\Components\TextInput::make('unit_price')
                             ->label(__('filament.resources.sales.unit_price'))
@@ -105,9 +107,27 @@ class SaleResource extends Resource
                             ->live(debounce: 1000)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
+                                $quantity = $get('quantity') ?? 0;
+                                $set('subtotal', $quantity * $state);
+                            }),
+                        Forms\Components\TextInput::make('subtotal')
+                            ->label(__('filament.resources.sales.subtotal'))
+                            ->prefix('$')
+                            ->disabled()
+                            ->dehydrated()
+                            ->afterStateHydrated(function ($component, $state, $get) {
+                                $quantity = $get('quantity') ?? 0;
+                                $unitPrice = $get('unit_price') ?? 0;
+                                $component->state($quantity * $unitPrice);
+                            })
+                            ->live()
+                            ->afterStateUpdated(function ($state, callable $set, $get) {
+                                $quantity = $get('quantity') ?? 0;
+                                $unitPrice = $get('unit_price') ?? 0;
+                                $set('subtotal', $quantity * $unitPrice);
                             }),
                     ])
-                    ->columns(3)
+                    ->columns(4)
                     ->columnSpanFull()
                     ->defaultItems(0)
                     ->reorderable(false)
