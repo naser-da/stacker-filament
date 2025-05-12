@@ -104,7 +104,7 @@ class SaleResource extends Resource
                             ->minValue(0)
                             ->step(0.001)
                             ->prefix('$')
-                            ->formatStateUsing(fn ($state) => number_format($state, 3))
+                            ->formatStateUsing(fn ($state) => number_format($state, 3, '.', ''))
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, callable $set, $get) {
                                 $set('total_amount', self::calculateTotal($get('products')));
@@ -116,7 +116,7 @@ class SaleResource extends Resource
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated()
-                            ->formatStateUsing(fn ($state) => number_format($state, 3))
+                            ->formatStateUsing(fn ($state) => number_format($state, 3, '.', ''))
                             ->afterStateHydrated(function ($component, $state, $get) {
                                 $quantity = $get('quantity') ?? 0;
                                 $unitPrice = $get('unit_price') ?? 0;
@@ -150,7 +150,7 @@ class SaleResource extends Resource
                     ->prefix('$')
                     ->disabled()
                     ->dehydrated()
-                    ->formatStateUsing(fn ($state) => number_format($state, 3))
+                    ->formatStateUsing(fn ($state) => number_format($state, 3, '.', ''))
                     ->afterStateHydrated(function ($component, $state, $record) {
                         if ($record) {
                             $total = $record->products->sum(function ($product) {
@@ -170,28 +170,34 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label(__('filament.resources.sales.id'))
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => number_format($state, 0, '.', ''))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('filament.resources.sales.customer'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('order_date')
                     ->label(__('filament.resources.sales.order_date'))
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->money('USD', 3)
                     ->label(__('filament.resources.sales.total_amount'))
+                    ->money('USD', 3)
+                    ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', ''))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
                     ->label(__('filament.resources.sales.items'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->label(__('filament.resources.sales.created_at'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->label(__('filament.resources.sales.updated_at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -45,10 +45,13 @@ class ViewCustomer extends ViewRecord
                             ->label(__('filament.resources.customers.total_orders_amount'))
                             ->money('USD', 3)
                             ->state(fn ($record) => $record->getTotalOrdersAmount())
+                            ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', ''))
+                            ->money('USD', 3)
+                            ->state(fn ($record) => $record->getTotalOrdersAmount())
                             ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                         Infolists\Components\TextEntry::make('last_order_date')
                             ->label(__('filament.resources.customers.last_order_date'))
-                            ->date()
+                            ->date('d/m/Y')
                             ->state(fn ($record) => $record->getLastOrderDate()),
                         Infolists\Components\TextEntry::make('total_orders')
                             ->label(__('filament.resources.customers.total_orders'))
@@ -65,12 +68,15 @@ class ViewCustomer extends ViewRecord
                             ->schema([
                                 Infolists\Components\TextEntry::make('id')
                                     ->label(__('filament.resources.sales.id'))
-                                    ->numeric(),
+                                    ->numeric()
+                                    ->formatStateUsing(fn ($state) => number_format($state, 0, '.', '')),
                                 Infolists\Components\TextEntry::make('order_date')
                                     ->label(__('filament.resources.sales.order_date'))
-                                    ->date(),
+                                    ->date('d/m/Y'),
                                 Infolists\Components\TextEntry::make('total_amount')
                                     ->label(__('filament.resources.sales.total_amount'))
+                                    ->money('USD', 3)
+                                    ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', ''))
                                     ->money('USD', 3)
                                     ->formatStateUsing(fn ($state) => '$' . number_format($state, 3, '.', '')),
                             ])
